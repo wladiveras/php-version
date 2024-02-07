@@ -6,17 +6,16 @@ use Symfony\Component\Routing\RouteCollection;
 // Routes system
 $routes = new RouteCollection();
 
+$url = constant('URL_SUBFOLDER');
+
+// Stoves
 $routes->add(
-    'product',
-    new Route(constant('URL_SUBFOLDER') . '/product/{id}', [
-        'controller' => 'UserController',
-        'method' => 'showAction'
-    ], [
-        'id' => '[0-9]+'
-    ])
+    'stove',
+    new Route("{$url}/stove/{id}", ['controller' => 'StoveController', 'method' => 'show'], ['id' => '[0-9]+'])
 );
 
+// Users
 $routes->add(
     'homepage',
-    new Route(constant('URL_SUBFOLDER') . '/', ['controller' => 'PageController', 'method' => 'indexAction'], [])
+    new Route("{$url}/", ['controller' => 'UsersController', 'method' => 'index'], [])
 );

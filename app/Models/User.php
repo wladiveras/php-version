@@ -2,14 +2,25 @@
 
 namespace App\Models;
 
-class Stove
-{
-    protected $id;
-    protected $burners; // Bocas limit = 4
-    protected $oven; // Forno limit = 1 
-    protected $lighters; // Acesendedores. 
-    protected $lamp; // Lampada
+use App\Config\Database;
 
+class User
+{
+    private $database;
+    protected $id;
+    protected $name;
+    protected $password;
+    protected $birth_date;
+
+    public function __construct()
+    {
+        $this->database = new Database();
+    }
+
+    public function __destruct()
+    {
+        $this->database->close();
+    }
 
     // GET METHODS
     public function getId()
@@ -17,46 +28,30 @@ class Stove
         return $this->id;
     }
 
-    public function getBurners()
+    public function getName()
     {
-        return $this->burners;
+        return $this->name;
     }
 
-    public function getOven()
+
+    public function getBirthDate()
     {
-        return $this->oven;
+        return $this->birth_date;
     }
 
-    public function getLighters()
-    {
-        return $this->lighters;
-    }
-
-    public function getLamp()
-    {
-        return $this->lamp;
-    }
 
     // SET METHODS
-    public function setBurners(string $burners)
+    public function setName(string $name)
     {
-        $this->burners = $burners;
+        $this->name = $name;
     }
 
-    public function setOven(string $oven)
+    public function setBirthDate(string $birth_date)
     {
-        $this->oven = $oven;
+        $this->birth_date = $birth_date;
     }
 
-    public function setLighters(string $lighters)
-    {
-        $this->lighters = $lighters;
-    }
 
-    public function setLamp(string $lamp)
-    {
-        $this->lamp = $lamp;
-    }
 
     // CRUD OPERATIONS
     public function create(array $data)
@@ -65,6 +60,9 @@ class Stove
 
     public function read(int $id)
     {
+        $sql = "SELECT * FROM users WHERE id = $id";
+        $result = $this->database->query($sql);
+        return $result->fetch_assoc();
     }
 
     public function update(int $id, array $data)

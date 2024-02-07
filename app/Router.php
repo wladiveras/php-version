@@ -18,11 +18,11 @@ class Router
         $context->fromRequest(Request::createFromGlobals());
 
         $matcher = new UrlMatcher($routes, $context);
+
         try {
             $arrayUri = explode('?', $_SERVER['REQUEST_URI']);
             $matcher = $matcher->match($arrayUri[0]);
 
-            // Cast params to int if numeric
             array_walk($matcher, function (&$param) {
                 if (is_numeric($param)) {
                     $param = (int) $param;

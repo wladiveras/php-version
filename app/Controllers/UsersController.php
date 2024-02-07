@@ -2,27 +2,40 @@
 
 namespace App\Controllers;
 
-use App\Models\User;
 use Symfony\Component\Routing\RouteCollection;
+use App\Models\User;
+use App\Helpers\Response;
 
 class UsersController
 {
-    // Show the product attributes based on the id.
-    public function showAction(int $id, RouteCollection $routes)
-    {
-        $product = new User();
-        $product->read($id);
 
-        require_once APP_ROOT . '/views/product.php';
+    public function index(int $id, RouteCollection $routes)
+    {
+        return Response::json([]);
     }
-    public function read(int $id)
+    public function show(int $id, RouteCollection $routes)
     {
-        $this->title = 'My first Product';
-        $this->description = 'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum ';
-        $this->price = 2.56;
-        $this->sku = 'MVC-SP-PHP-01';
-        $this->image = 'https://via.placeholder.com/150';
 
-        return $this;
+        $user = [
+            "id" => 1,
+            "name" => 'wladi',
+        ];
+
+        return Response::json($user);
+    }
+
+    public function store(int $id, RouteCollection $routes)
+    {
+        return Response::json([]);
+    }
+
+    public function update(int $id, RouteCollection $routes)
+    {
+        return Response::json([]);
+    }
+
+    public function delete(int $id, RouteCollection $routes)
+    {
+        return Response::json([]);
     }
 }

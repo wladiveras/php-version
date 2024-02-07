@@ -2,14 +2,26 @@
 
 namespace App\Models;
 
+use App\Config\Database;
+
 class Stove
 {
+    private $database;
     protected $id;
     protected $burners; // Bocas limit = 4
     protected $oven; // Forno limit = 1 
     protected $lighters; // Acesendedores. 
     protected $lamp; // Lampada
 
+    public function __construct()
+    {
+        $this->database = new Database();
+    }
+
+    public function __destruct()
+    {
+        $this->database->close();
+    }
 
     // GET METHODS
     public function getId()
