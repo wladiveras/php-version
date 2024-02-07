@@ -1,0 +1,12 @@
+{
+    "name": "wladiveras/fogao-project-v1",
+    "description": "A small pure php framework.",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "classmap": [
+            "app/"
+        ]
+    }
+}
