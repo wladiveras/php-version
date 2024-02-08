@@ -6,6 +6,7 @@ namespace App\Controllers;
 use App\Models\User;
 use App\Core\Request;
 use App\Helpers\Response;
+use App\Helpers\Parse;
 
 
 class UsersController
@@ -16,26 +17,18 @@ class UsersController
         $request = $request->getJson();
 
         $user = new User();
-        $read = $user->read($request['id']);
+        $success = $user->read($request['id']);
 
-        return Response::json([
-            'sucess' => $read,
-            'message' => $read ? null : 'something went wrong',
-            'data' => $user->getId()
-        ]);
+        return Response::json(Parse::result($success, $user->getId()));
     }
     public function show(Request $request)
     {
         $request = $request->getJson();
 
         $user = new User();
-        $read = $user->read($request['id']);
+        $success = $user->read($request['id']);
 
-        return Response::json([
-            'sucess' => $read,
-            'message' => $read ? null : 'something went wrong',
-            'data' => $user->getAll()
-        ]);
+        return Response::json(Parse::result($success, $user->getAll()));
     }
 
     public function create(Request $request)
@@ -50,13 +43,9 @@ class UsersController
         $user->setPassword($request['password']);
         $user->setBirthDate($request['birth_date']);
 
-        $create = $user->create();
+        $success = $user->create();
 
-        return Response::json([
-            'sucess' => $create,
-            'message' => $create ? null : 'something went wrong',
-            'data' => $user->getId()
-        ]);
+        return Response::json(Parse::result($success, $user->getId()));
     }
 
     public function update(Request $request)
@@ -65,18 +54,14 @@ class UsersController
 
         $user = new User();
 
-        $user->setName('Jane Doe');
-        $user->setEmail('wladi@wladi.com');
-        $user->setPassword('new_secret');
-        $user->setBirthDate('1991-01-01');
+        $user->setName($request['name']);
+        $user->setEmail($request['email']);
+        $user->setPassword($request['password']);
+        $user->setBirthDate($request['birth_date']);
 
-        $update = $user->update($request['id']);
+        $success = $user->update($request['id']);
 
-        return Response::json([
-            'sucess' => $update,
-            'message' => $update ? null : 'something went wrong',
-            'data' => $request['id']
-        ]);
+        return Response::json(Parse::result($success, $user->getAll()));
     }
 
     public function delete(Request $request)
@@ -84,12 +69,8 @@ class UsersController
         $request = $request->getJson();
 
         $user = new User();
-        $delete = $user->delete($request['id']);
+        $success = $user->delete($request['id']);
 
-        return Response::json([
-            'sucess' => $delete,
-            'message' => $delete ? null : 'something went wrong',
-            'data' => $request['id']
-        ]);
+        return Response::json(Parse::result($success, $request['id']));
     }
 }
