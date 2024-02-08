@@ -2,33 +2,25 @@
 
 namespace App\Config;
 
-require_once '../config/config.php';
-
-use mysqli;
 
 class Database
 {
-    private $host = 'localhost';
-    private $username = 'root';
-    private $password = '';
-    private $db_name = 'my_mvc_project';
-    private $conn;
+    private static $host = 'localhost';
+    private static $username = 'root';
+    private static $password = '';
+    private static $database = 'xxxx';
+    private static $conn;
 
-    public function __construct()
+    public static function connect()
     {
-        $this->conn = new mysqli($this->host, $this->username, $this->password, $this->db_name);
-        if ($this->conn->connect_error) {
-            die("Connection failed: " . $this->conn->connect_error);
+        if (!isset(self::$conn)) {
+            self::$conn = new \mysqli(self::$host, self::$username, self::$password, self::$database);
+
+            if (self::$conn->connect_error) {
+                die('Connection failed: ' . self::$conn->connect_error);
+            }
         }
-    }
 
-    public function query($sql)
-    {
-        return $this->conn->query($sql);
-    }
-
-    public function close()
-    {
-        $this->conn->close();
+        return self::$conn;
     }
 }

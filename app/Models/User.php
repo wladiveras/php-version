@@ -15,20 +15,22 @@ class User
 
     public function __construct()
     {
-        $this->database = new Database();
+        $this->database =  Database::connect();
     }
 
     public function __destruct()
     {
-        $this->database->close();
     }
 
-    // GET METHODS
+    // Getters
     public function getId()
     {
         return $this->id;
     }
-
+    public function getAdressid()
+    {
+        return $this->address_id;
+    }
     public function getName()
     {
         return $this->name;
@@ -41,7 +43,15 @@ class User
     }
 
 
-    // SET METHODS
+    // Setters
+    public function setId(string $id)
+    {
+        $this->id = $id;
+    }
+    public function setAdressid(string $address_id)
+    {
+        $this->address_id = $address_id;
+    }
     public function setName(string $name)
     {
         $this->name = $name;
@@ -52,25 +62,60 @@ class User
         $this->birth_date = $birth_date;
     }
 
-
-
-    // CRUD OPERATIONS
-    public function create(array $data)
+    // Query Operation
+    public function create()
     {
+        $query = "INSERT INTO users (name, password, birth_date) VALUES (?, ?, ?)";
+        $stmt = $this->database->connect()->prepare($query);
+        $stmt->bind_param("sss", $this->name, $this->password, $this->birth_date);
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public function read(int $id)
+    public function read()
     {
-        $sql = "SELECT * FROM users WHERE id = $id";
-        $result = $this->database->query($sql);
-        return $result->fetch_assoc();
+        $query = "SELECT * FROM users WHERE id = ?";
+        $stmt = $this->database->connect()->prepare($query);
+        $stmt->bind_param("i", $this->id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $this->id = $row['id'];
+                $this->address_id = $row['address_id'];
+                $this->name = $row['name'];
+                $this->password = $row['password'];
+                $this->birth_date = $row['birth_date'];
+            }
+        } else {
+            return false;
+        }
     }
 
-    public function update(int $id, array $data)
+    public function update()
     {
+        $query = "UPDATE users SET name = ?, password = ?, birth_date = ? WHERE id = ?";
+        $stmt = $this->database->connect()->prepare($query);
+        $stmt->bind_param("sssi", $this->name, $this->password, $this->birth_date, $this->id);
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public function delete(int $id)
+    public function delete()
     {
+        $query = "DELETE FROM users WHERE id = ?";
+        $stmt = $this->database->connect()->prepare($query);
+        $stmt->bind_param("i", $this->id);
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

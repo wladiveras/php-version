@@ -14,6 +14,9 @@ class UsersController
     public function index(Request $request)
     {
 
+        $user = new User();
+        $user->getName();
+
         return Response::json(['action' => 'index', 'request' => $request]);
     }
     public function show(Request $request, int $id)
