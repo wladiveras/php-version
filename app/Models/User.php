@@ -67,11 +67,15 @@ class User
     }
 
     // Query Operation
-    public function create()
+    public function create(int $id)
     {
-        $query = "INSERT INTO users (name, password, birth_date) VALUES (?, ?, ?)";
+        $query = "INSERT INTO users (name, password, birth_date) VALUES (:name, :password, :birth_date)";
         $stmt = $this->database->connect()->prepare($query);
-        $stmt->bind_param("sss", $this->name, md5($this->password), $this->birth_date);
+
+        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':password', $this->password);
+        $stmt->bindParam(':birth_date', $this->birth_date);
+
         if ($stmt->execute()) {
             return true;
         } else {
@@ -79,30 +83,36 @@ class User
         }
     }
 
-    public function read()
+    public function read(int $id): bool
     {
-        $query = "SELECT * FROM users WHERE id = ?";
-        $stmt = $this->database->connect()->prepare($query);
-        $stmt->bind_param("i", $this->id);
+        $query = "SELECT * FROM users WHERE id = :id";
+        $stmt = $this->database->prepare($query);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
         $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $this->setId($row['id']);
-                $this->setAdressid($row['address_id']);
-                $this->setName($row['name']);
-                $this->setBirthDate($row['birth_date']);
-            }
+
+        if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $this->id = $row['id'];
+            $this->address_id = $row['address_id'];
+            $this->name = $row['name'];
+            $this->password = $row['password'];
+            $this->birth_date = $row['birth_date'];
+            return true;
         } else {
             return false;
         }
     }
 
-    public function update()
+    public function update(int $id)
     {
-        $query = "UPDATE users SET name = ?, password = ?, birth_date = ? WHERE id = ?";
+        $query = "UPDATE users SET name = :name, password = :password, birth_date = :birth_date WHERE id = :id";
         $stmt = $this->database->connect()->prepare($query);
-        $stmt->bind_param("sssi", $this->name, md5($this->password), $this->birth_date, $this->id);
+
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+
+        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':password', $this->password);
+        $stmt->bindParam(':birth_date', $this->birth_date);
+
         if ($stmt->execute()) {
             return true;
         } else {
@@ -110,11 +120,13 @@ class User
         }
     }
 
-    public function delete()
+    public function delete(int $id)
     {
-        $query = "DELETE FROM users WHERE id = ?";
+        $query = "DELETE FROM users WHERE id = :id";
         $stmt = $this->database->connect()->prepare($query);
-        $stmt->bind_param("i", $this->id);
+
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+
         if ($stmt->execute()) {
             return true;
         } else {

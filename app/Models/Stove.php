@@ -131,16 +131,22 @@ class Stove
     // Query Operation
     public function create()
     {
-        $query = "INSERT INTO stoves (burners, oven, lighters, lamp, lamp_color, stove_color, has_glass, glass_x, glass_y) VALUES (?, ?, ?, ?, ? , ?, ?, ?, ?)";
+        $query = "INSERT INTO stoves (burners, oven, lighters, lamp, lamp_color, stove_color, has_glass, glass_x, glass_y) VALUES (:burners, :oven, :lighters, :lamp, :lamp_color, :stove_color, :has_glass, :glass_x, :glass_y)";
 
-        $stmt = $this->database->prepare($query);
+        $stmt = $this->database->connect()->prepare($query);
 
-        $stmt->bind_param("isss", $this->burners, $this->oven, $this->lighters, $this->lamp, $this->lamp_color, $this->stove_color, $this->has_glass, $this->glass_x, $this->glass_y, $this->lamp);
+        $stmt->bindParam(':burners', $this->burners);
+        $stmt->bindParam(':oven', $this->oven);
+        $stmt->bindParam(':lighters', $this->lighters);
+        $stmt->bindParam(':lamp', $this->lamp);
+        $stmt->bindParam(':lamp_color', $this->lamp_color);
+        $stmt->bindParam(':stove_color', $this->stove_color);
+        $stmt->bindParam(':has_glass', $this->has_glass);
+        $stmt->bindParam(':glass_x', $this->glass_x);
+        $stmt->bindParam(':glass_y', $this->glass_y);
 
-        $result = $stmt->execute();
-
-        if ($result) {
-            $this->id = $stmt->insert_id;
+        if ($stmt->execute()) {
+            $this->id = $this->database->connect()->lastInsertId();
             return true;
         } else {
             return false;
@@ -181,15 +187,23 @@ class Stove
 
     public function update(int $id)
     {
-        $query = "UPDATE stoves SET burners = ?, oven = ?, lighters = ?, lamp = ?, lamp_color = ?, stove_color = ?, has_glass = ?, glass_x = ?, glass_y = ? WHERE id = ?";
+        $query = "UPDATE stoves SET burners = :burners, oven = :oven, lighters = :lighters, lamp = :lamp, lamp_color = :lamp_color, stove_color = :stove_color, has_glass = :has_glass, glass_x = :glass_x, glass_y = :glass_y WHERE id = :id";
 
-        $stmt = $this->database->prepare($query);
+        $stmt = $this->database->connect()->prepare($query);
 
-        $stmt->bind_param("isssi", $this->burners, $this->oven, $this->lighters, $this->lamp, $this->lamp_color, $this->stove_color, $this->has_glass, $this->glass_x, $this->glass_y, $id);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
 
-        $result = $stmt->execute();
+        $stmt->bindParam(':burners', $this->burners);
+        $stmt->bindParam(':oven', $this->oven);
+        $stmt->bindParam(':lighters', $this->lighters);
+        $stmt->bindParam(':lamp', $this->lamp);
+        $stmt->bindParam(':lamp_color', $this->lamp_color);
+        $stmt->bindParam(':stove_color', $this->stove_color);
+        $stmt->bindParam(':has_glass', $this->has_glass);
+        $stmt->bindParam(':glass_x', $this->glass_x);
+        $stmt->bindParam(':glass_y', $this->glass_y);
 
-        if ($result) {
+        if ($stmt->execute()) {
             return true;
         } else {
             return false;
@@ -198,11 +212,12 @@ class Stove
 
     public function delete(int $id)
     {
-        $query = "DELETE FROM stoves WHERE id = ?";
-        $stmt = $this->database->prepare($query);
-        $stmt->bind_param("i", $id);
-        $result = $stmt->execute();
-        if ($result) {
+        $query = "DELETE FROM stoves WHERE id = :id";
+        $stmt = $this->database->connect()->prepare($query);
+
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
             return true;
         } else {
             return false;
