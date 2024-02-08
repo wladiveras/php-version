@@ -1,6 +1,6 @@
 {
-    "name": "wladiveras/fogao-project-v1",
-    "description": "A small pure php framework.",
+    "name": "wladiveras/small-framework",
+    "description": "A small and zero pependency php framework, pure like a water.",
     "autoload": {
         "psr-4": {
             "App\\": "app/"
@@ -12,7 +12,7 @@
     "authors": [
         {
             "name": "Wladi Veras",
-            "email": "wladinart@gmail.com"
+            "email": "hi@wladi.com.br"
         }
     ]
 }

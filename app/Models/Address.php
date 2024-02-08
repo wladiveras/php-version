@@ -27,7 +27,7 @@ class Address
         $this->database = null;
     }
 
-    // Getters
+    // Getters    
     public function getId()
     {
         return $this->id;
@@ -119,10 +119,7 @@ class Address
     // Query Operation
     public function create(): bool
     {
-
-        $query = $this->database->prepare(
-            "INSERT INTO addresses (user_id, number, street, region, neighbourhood, country, country_code, postal_code) VALUES (:user_id, :number, :street, :region, :neighbourhood, :country, :country_code, :postal_code)"
-        );
+        $query = $this->database->prepare("INSERT INTO addresses (user_id, number, street, region, neighbourhood, country, country_code, postal_code) VALUES (:user_id, :number, :street, :region, :neighbourhood, :country, :country_code, :postal_code)");
 
         $query->bindParam(':user_id', $this->user_id);
         $query->bindParam(':number', $this->number);
@@ -144,6 +141,7 @@ class Address
     public function read(int $id): bool
     {
         $query = $this->database->prepare("SELECT * FROM addresses WHERE id = :id");
+
         $query->bindParam(':id', $id, \PDO::PARAM_INT);
         $query->execute();
 
@@ -188,11 +186,10 @@ class Address
 
     public function delete(int $id): bool
     {
-        $stmt = $this->database->prepare("DELETE FROM addresses WHERE id = :id");
+        $query = $this->database->prepare("DELETE FROM addresses WHERE id = :id");
+        $query->bindParam(':id', $id, \PDO::PARAM_INT);
 
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
-
-        if ($stmt->execute()) {
+        if ($query->execute()) {
             return true;
         } else {
             return false;

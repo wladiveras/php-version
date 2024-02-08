@@ -16,20 +16,24 @@ class UsersController
         $request = $request->getJson();
 
         $user = new User();
-        $user->getName();
+        $read = $user->read($request['id']);
 
-        return Response::json(['status' => 'index', 'request' => $request]);
+        return Response::json([
+            'sucess' => $read,
+            'data' => $user->getId()
+        ]);
     }
     public function show(Request $request)
     {
         $request = $request->getJson();
 
         $user = new User();
-        $user->setId(1);
-        $user->read(1);
-        $user->getName();
+        $read = $user->read($request['id']);
 
-        return Response::json(['action' => 'show', 'request' => $request]);
+        return Response::json([
+            'sucess' => $read,
+            'data' => $user->getId()
+        ]);
     }
 
     public function create(Request $request)
@@ -38,6 +42,7 @@ class UsersController
         $request = $request->getJson();
 
         $user = new User();
+
         $user->setName($request['name']);
         $user->setEmail($request['email']);
         $user->setPassword($request['password']);
@@ -45,7 +50,10 @@ class UsersController
 
         $create = $user->create();
 
-        return Response::json(['sucess' => $create, 'user_id' => $user->getId()]);
+        return Response::json([
+            'sucess' => $create,
+            'data' => $user->getId()
+        ]);
     }
 
     public function update(Request $request)
@@ -53,13 +61,18 @@ class UsersController
         $request = $request->getJson();
 
         $user = new User();
+
         $user->setName('Jane Doe');
         $user->setEmail('wladi@wladi.com');
         $user->setPassword('new_secret');
         $user->setBirthDate('1991-01-01');
-        $user->update(1);
 
-        return Response::json(['action' => 'update', 'request' => $request]);
+        $update = $user->update($request['id']);
+
+        return Response::json([
+            'sucess' => $update,
+            'data' => $request['id']
+        ]);
     }
 
     public function delete(Request $request)
@@ -67,8 +80,11 @@ class UsersController
         $request = $request->getJson();
 
         $user = new User();
-        $user->setId(1);
-        $user->delete(1);
-        return Response::json(['action' => 'delete', 'request' => $request]);
+        $delete = $user->delete($request['id']);
+
+        return Response::json([
+            'sucess' => $delete,
+            'data' => $request['id']
+        ]);
     }
 }
