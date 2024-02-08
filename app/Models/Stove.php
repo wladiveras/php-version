@@ -13,6 +13,12 @@ class Stove
     protected $lighters; // Acesendedores. 
     protected $lamp; // Lampada
 
+    protected $lamp_color; // cor da lampada
+    protected $stove_color; // cor do forno
+    protected $has_glass; // se tem vidro
+    protected $glass_x; // Dimensoes do vidro
+    protected $glass_y; // Dimensao do vidro.
+
     public function __construct()
     {
         $this->database = new Database();

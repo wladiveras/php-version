@@ -2,40 +2,37 @@
 
 namespace App\Controllers;
 
-use Symfony\Component\Routing\RouteCollection;
+
 use App\Models\User;
+use App\Core\Request;
 use App\Helpers\Response;
+
 
 class UsersController
 {
 
-    public function index(int $id, RouteCollection $routes)
+    public function index(Request $request)
     {
-        return Response::json([]);
+
+        return Response::json(['action' => 'index', 'request' => $request]);
     }
-    public function show(int $id, RouteCollection $routes)
+    public function show(Request $request, int $id)
     {
-
-        $user = [
-            "id" => 1,
-            "name" => 'wladi',
-        ];
-
-        return Response::json($user);
+        return Response::json(['action' => 'show', 'id' => $id, 'request' => $request]);
     }
 
-    public function store(int $id, RouteCollection $routes)
+    public function create(Request $request)
     {
-        return Response::json([]);
+        return Response::json(['action' => 'store', 'request' => $request]);
     }
 
-    public function update(int $id, RouteCollection $routes)
+    public function update(Request $request, int $id)
     {
-        return Response::json([]);
+        return Response::json(['action' => 'update', 'id' => $id, 'request' => $request]);
     }
 
-    public function delete(int $id, RouteCollection $routes)
+    public function delete(int $id)
     {
-        return Response::json([]);
+        return Response::json(['action' => 'delete', 'id' => $id]);
     }
 }

@@ -6,12 +6,16 @@ class Response
 {
     static public function json($data)
     {
-        $response = [];
+        header("Content-Type: application/json");
 
-        if (is_array($data) && !empty($data)) {
-            $response = json_encode($data);
+        $response = json_encode($data, JSON_PRETTY_PRINT) ?? json_encode(["jsonError" => json_last_error_msg()]);
+
+        if ($response === false) {
+            $response = '{"jsonError":"unknown"}';
         }
 
-        return $response;
+        http_response_code(($response === false) ? 500 : 200);
+
+        echo $response;
     }
 }

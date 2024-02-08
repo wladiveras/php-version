@@ -1,21 +1,21 @@
 <?php
 
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
+use App\Core\Router;
+use App\Core\Request;
+use App\Controllers\UsersController;
 
-// Routes system
-$routes = new RouteCollection();
 
-$url = constant('URL_SUBFOLDER');
+$router = new Router(new Request);
 
-// Stoves
-$routes->add(
-    'stove',
-    new Route("{$url}/stove/{id}", ['controller' => 'StoveController', 'method' => 'show'], ['id' => '[0-9]+'])
-);
 
-// Users
-$routes->add(
-    'homepage',
-    new Route("{$url}/", ['controller' => 'UsersController', 'method' => 'index'], [])
-);
+$router->get('/', function () {
+    return 'Hello Worldinelson';
+});
+
+$router->post('/some/route', function ($id, Request $request) {
+
+    //$body = $request->getBody();
+
+    $controller = new UsersController();
+    return $controller->update($request, $id);
+});

@@ -9,8 +9,10 @@
             "app/"
         ]
     },
-    "require": {
-        "symfony/routing": "^7.0",
-        "symfony/http-foundation": "^7.0"
-    }
+    "authors": [
+        {
+            "name": "Wladi Veras",
+            "email": "wladinart@gmail.com"
+        }
+    ]
 }

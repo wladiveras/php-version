@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+RewriteRule ^./ - [L]
+
+RewriteCond %{DOCUMENT_ROOT}/public/$1 -f
+RewriteRule (.+) $1 [L]
+
+RewriteRule (.*) index.php?route=$1 [L,QSA]
+</IfModule>
