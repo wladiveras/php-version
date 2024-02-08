@@ -7,21 +7,21 @@ use App\Core\Database;
 class Address
 {
     private $database;
+    private $city;
     protected $id;
     protected $user_id;
     protected $city_id;
     protected $number;
     protected $street;
-    protected $region;
+    protected $complement;
     protected $neighbourhood;
     protected $country;
-    protected $country_code;
-
     protected $postal_code;
 
     public function __construct()
     {
         $this->database = Database::connect();
+        $this->city = new City();
     }
 
     public function __destruct()
@@ -55,9 +55,9 @@ class Address
         return $this->street;
     }
 
-    public function getRegion()
+    public function getComplement()
     {
-        return $this->region;
+        return $this->complement;
     }
 
     public function getNeighbourhood()
@@ -68,11 +68,6 @@ class Address
     public function getCountry()
     {
         return $this->country;
-    }
-
-    public function getCountryCode()
-    {
-        return $this->country_code;
     }
 
     public function getPostalCode()
@@ -91,7 +86,7 @@ class Address
         $this->user_id = $user_id;
     }
 
-    public function setCityId($city_id)
+    public function SetCityId($city_id)
     {
         $this->city_id = $city_id;
     }
@@ -106,9 +101,9 @@ class Address
         $this->street = $street;
     }
 
-    public function setRegion($region)
+    public function setComplement($complement)
     {
-        $this->region = $region;
+        $this->complement = $complement;
     }
 
     public function setNeighbourhood($neighbourhood)
@@ -120,10 +115,7 @@ class Address
     {
         $this->country = $country;
     }
-    public function setCountryCode($country_code)
-    {
-        $this->country_code = $country_code;
-    }
+
     public function setPostalCode($postal_code)
     {
         $this->postal_code = $postal_code;
@@ -137,26 +129,41 @@ class Address
             "city_id" => $this->getCityId(),
             "number" => $this->getNumber(),
             "street" => $this->getStreet(),
-            "region" => $this->getRegion(),
+            "complement" => $this->getComplement(),
             "neighbourhood" => $this->getNeighbourhood(),
             "country" => $this->getCountry(),
             "postal_code" => $this->getPostalCode(),
+            'city' => $this->getCity()
         ];
+    }
+
+    // Relationship
+    public function getCity(): City | array
+    {
+        $this->city->read($this->getCityId());
+        $this->setCity($this->city->getAll());
+
+        return $this->city;
+    }
+
+    public function setCity($city): void
+    {
+        $this->city = $city;
     }
 
     // Query Operation
     public function create(): bool
     {
         try {
-            $query = $this->database->prepare("INSERT INTO addresses (user_id, number, street, region, neighbourhood, country, country_code, postal_code) VALUES (:user_id, :number, :street, :region, :neighbourhood, :country, :country_code, :postal_code)");
+            $query = $this->database->prepare("INSERT INTO addresses (user_id, city_id, number, street, complement, neighbourhood, country, postal_code) VALUES (:user_id, :city_id, :number, :street, :complement, :neighbourhood, :country, :postal_code)");
 
             $query->bindParam(':user_id', $this->user_id);
+            $query->bindParam(':city_id', $this->city_id);
             $query->bindParam(':number', $this->number);
             $query->bindParam(':street', $this->street);
-            $query->bindParam(':region', $this->region);
+            $query->bindParam(':complement', $this->complement);
             $query->bindParam(':neighbourhood', $this->neighbourhood);
             $query->bindParam(':country', $this->country);
-            $query->bindParam(':country_code', $this->country_code);
             $query->bindParam(':postal_code', $this->postal_code);
 
             if ($query->execute()) {
@@ -170,10 +177,15 @@ class Address
         }
     }
 
-    public function read(int $id): bool
+    public function read(int $id, $user_id = false): bool
     {
         try {
-            $query = $this->database->prepare("SELECT * FROM addresses WHERE id = :id");
+            if ($user_id) {
+                $query = $this->database->prepare("SELECT * FROM addresses WHERE user_id = :id");
+            } else {
+                $query = $this->database->prepare("SELECT * FROM addresses WHERE id = :id");
+            }
+
             $query->execute([':id' => $id]);
 
             $address = $query->fetch();
@@ -181,12 +193,12 @@ class Address
             if ($address) {
                 $this->setId($address['id']);
                 $this->setUserId($address['user_id']);
+                $this->SetCityId($address['city_id']);
                 $this->setNumber($address['number']);
                 $this->setStreet($address['street']);
-                $this->setRegion($address['region']);
+                $this->setComplement($address['complement']);
                 $this->setNeighbourhood($address['neighbourhood']);
                 $this->setCountry($address['country']);
-                $this->setCountryCode($address['country_code']);
                 $this->setPostalCode($address['postal_code']);
                 return true;
             } else {
@@ -200,14 +212,14 @@ class Address
     public function update(int $id): bool
     {
         try {
-            $query = $this->database->prepare("UPDATE addresses SET user_id = :user_id, number = :number, street = :street, region = :region, neighbourhood = :neighbourhood, country = :country, country_code = :country_code, postal_code = :postal_code WHERE id = :id");
+            $query = $this->database->prepare("UPDATE addresses SET user_id = :user_id, city_id = :city_id, number = :number, street = :street, complement = :complement, neighbourhood = :neighbourhood, country = :country, postal_code = :postal_code WHERE id = :id");
             $query->bindParam(':user_id', $this->user_id);
+            $query->bindParam(':city_id', $this->city_id);
             $query->bindParam(':number', $this->number);
             $query->bindParam(':street', $this->street);
-            $query->bindParam(':region', $this->region);
+            $query->bindParam(':complement', $this->complement);
             $query->bindParam(':neighbourhood', $this->neighbourhood);
             $query->bindParam(':country', $this->country);
-            $query->bindParam(':country_code', $this->country_code);
             $query->bindParam(':postal_code', $this->postal_code);
 
             if ($query->execute([':id' => $id])) {

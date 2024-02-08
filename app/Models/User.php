@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Core\Database;
+use App\Models\Address;
 
 class User
 {
     private $database;
+    private $address;
     protected $id;
     protected $name;
     protected $email;
@@ -16,6 +18,7 @@ class User
     public function __construct()
     {
         $this->database = Database::connect();
+        $this->address = new Address();
     }
 
     public function __destruct()
@@ -45,7 +48,7 @@ class User
     }
 
     // Setters
-    public function setId(string $id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
@@ -75,9 +78,25 @@ class User
         return [
             "id" => $this->getId(),
             "name" => $this->getName(),
-            "email" => $this->getName(),
+            "email" => $this->getEmail(),
             "birth_date" => $this->getBirthDate(),
+            "address" => $this->getAddress()
         ];
+    }
+
+    // Relationship
+    public function getAddress(): Address | array
+    {
+
+        $this->address->read($this->getId(), true);
+        $this->setAddress($this->address->getAll());
+
+        return $this->address;
+    }
+
+    public function setAddress($address): void
+    {
+        $this->address = $address;
     }
 
     // Query Operation

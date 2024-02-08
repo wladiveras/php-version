@@ -90,8 +90,8 @@ class State
 
             if ($state) {
                 $this->setId($state['id']);
-                $this->setName($state['user_id']);
-                $this->setCode($state['number']);
+                $this->setName($state['name']);
+                $this->setCode($state['code']);
                 return true;
             } else {
                 return false;

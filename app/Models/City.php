@@ -7,6 +7,7 @@ use App\Core\Database;
 class City
 {
     private $database;
+    private $state;
     protected $id;
     protected $state_id;
     protected $name;
@@ -14,6 +15,7 @@ class City
     public function __construct()
     {
         $this->database = Database::connect();
+        $this->state = new State();
     }
 
     public function __destruct()
@@ -57,7 +59,22 @@ class City
             "id" => $this->getId(),
             "state_id" => $this->getStateId(),
             "name" => $this->getName(),
+            "state" => $this->getState(),
         ];
+    }
+
+    // Relationship
+    public function getState(): State | array
+    {
+        $this->state->read($this->getStateId());
+        $this->setState($this->state->getAll());
+
+        return $this->state;
+    }
+
+    public function setState($state): void
+    {
+        $this->state = $state;
     }
 
     // Query Operation
@@ -79,10 +96,15 @@ class City
         }
     }
 
-    public function read(int $id): bool
+    public function read(int $id, $state_id = false): bool
     {
         try {
-            $query = $this->database->prepare("SELECT * FROM cities WHERE id = :id");
+            if ($state_id) {
+                $query = $this->database->prepare("SELECT * FROM cities WHERE state_id = :id");
+            } else {
+                $query = $this->database->prepare("SELECT * FROM cities WHERE id = :id");
+            }
+
             $query->execute([':id' => $id]);
 
             $citie = $query->fetch();
