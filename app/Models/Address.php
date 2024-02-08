@@ -24,6 +24,7 @@ class Address
 
     public function __destruct()
     {
+        $this->database = null;
     }
 
     // Getters
@@ -116,81 +117,82 @@ class Address
     }
 
     // Query Operation
-    public function create()
+    public function create(): bool
     {
-        $query = "INSERT INTO addresses (user_id, number, street, region, neighbourhood, country, country_code, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        $stmt = $this->database->prepare($query);
+        $query = $this->database->prepare(
+            "INSERT INTO addresses (user_id, number, street, region, neighbourhood, country, country_code, postal_code) VALUES (:user_id, :number, :street, :region, :neighbourhood, :country, :country_code, :postal_code)"
+        );
 
-        $stmt->bind_param("isssssss", $this->user_id, $this->number, $this->street, $this->region, $this->neighbourhood, $this->country, $this->country_code, $this->postal_code);
+        $query->bindParam(':user_id', $this->user_id);
+        $query->bindParam(':number', $this->number);
+        $query->bindParam(':street', $this->street);
+        $query->bindParam(':region', $this->region);
+        $query->bindParam(':neighbourhood', $this->neighbourhood);
+        $query->bindParam(':country', $this->country);
+        $query->bindParam(':country_code', $this->country_code);
+        $query->bindParam(':postal_code', $this->postal_code);
 
-        $result = $stmt->execute();
-
-        if ($result) {
-            $this->id = $stmt->insert_id;
+        if ($query->execute()) {
+            $this->id = $this->database->lastInsertId();
             return true;
         } else {
             return false;
         }
     }
 
-    public function read($id)
+    public function read(int $id): bool
     {
-        $query = "SELECT * FROM addresses WHERE id = ?";
+        $query = $this->database->prepare("SELECT * FROM addresses WHERE id = :id");
+        $query->bindParam(':id', $id, \PDO::PARAM_INT);
+        $query->execute();
 
-        $stmt = $this->database->prepare($query);
+        $address = $query->fetch();
 
-        $stmt->bind_param("i", $id);
-
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $this->setId($row['id']);
-            $this->setUserId($row['user_id']);
-            $this->setNumber($row['number']);
-            $this->setStreet($row['street']);
-            $this->setRegion($row['region']);
-            $this->setNeighbourhood($row['neighbourhood']);
-            $this->setCountry($row['country']);
-            $this->setCountryCode($row['country_code']);
-            $this->setPostalCode($row['postal_code']);
+        if (!is_null($address)) {
+            $this->setId($address['id']);
+            $this->setUserId($address['user_id']);
+            $this->setNumber($address['number']);
+            $this->setStreet($address['street']);
+            $this->setRegion($address['region']);
+            $this->setNeighbourhood($address['neighbourhood']);
+            $this->setCountry($address['country']);
+            $this->setCountryCode($address['country_code']);
+            $this->setPostalCode($address['postal_code']);
             return true;
         } else {
             return false;
         }
     }
 
-    public function update($id)
+    public function update(int $id): bool
     {
-        $query = "UPDATE addresses SET user_id = ?, number = ?, street = ?, region = ?, neighbourhood = ?, country = ?, country_code = ?, postal_code = ? WHERE id = ?";
+        $query = $this->database->prepare("UPDATE addresses SET user_id = :user_id, number = :number, street = :street, region = :region, neighbourhood = :neighbourhood, country = :country, country_code = :country_code, postal_code = :postal_code WHERE id = :id");
 
-        $stmt = $this->database->prepare($query);
+        $query->bindParam(':id', $id, \PDO::PARAM_INT);
+        $query->bindParam(':user_id', $this->user_id);
+        $query->bindParam(':number', $this->number);
+        $query->bindParam(':street', $this->street);
+        $query->bindParam(':region', $this->region);
+        $query->bindParam(':neighbourhood', $this->neighbourhood);
+        $query->bindParam(':country', $this->country);
+        $query->bindParam(':country_code', $this->country_code);
+        $query->bindParam(':postal_code', $this->postal_code);
 
-        $stmt->bind_param("isssssssi", $this->user_id, $this->number, $this->street, $this->region, $this->neighbourhood, $this->country, $this->country_code, $this->postal_code, $id);
-
-        $result = $stmt->execute();
-
-        if ($result) {
+        if ($query->execute()) {
             return true;
         } else {
             return false;
         }
     }
 
-    public function delete(int $id)
+    public function delete(int $id): bool
     {
-        $query = "DELETE FROM addresses WHERE id = ?";
+        $stmt = $this->database->prepare("DELETE FROM addresses WHERE id = :id");
 
-        $stmt = $this->database->prepare($query);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
 
-        $stmt->bind_param("i", $id);
-
-        $result = $stmt->execute();
-
-        if ($result) {
+        if ($stmt->execute()) {
             return true;
         } else {
             return false;

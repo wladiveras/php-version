@@ -36,7 +36,7 @@ class UsersController
         $user->setName('John Doe');
         $user->setPassword('secret');
         $user->setBirthDate('1990-01-01');
-        $user->create(1);
+        $user->create();
 
         return Response::json(['action' => 'store', 'request' => $request]);
     }

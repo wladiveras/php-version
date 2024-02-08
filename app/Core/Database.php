@@ -6,12 +6,13 @@ class Database
 {
     private static $dsn = 'mysql:host=localhost;dbname=fire';
     private static $username = 'root';
-    private static $password = 'secret';
+    private static $password = 'Wladi@121';
     private static $options = [
         \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
         \PDO::ATTR_EMULATE_PREPARES   => false,
     ];
+    
     private static $conn;
 
     public static function connect()

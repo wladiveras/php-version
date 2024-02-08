@@ -8,7 +8,6 @@ class User
 {
     private $database;
     protected $id;
-    protected $address_id;
     protected $name;
     protected $password;
     protected $birth_date;
@@ -20,6 +19,7 @@ class User
 
     public function __destruct()
     {
+        $this->database = null;
     }
 
     // Getters
@@ -27,10 +27,7 @@ class User
     {
         return $this->id;
     }
-    public function getAdressid()
-    {
-        return $this->address_id;
-    }
+
     public function getName()
     {
         return $this->name;
@@ -48,14 +45,12 @@ class User
     {
         $this->id = $id;
     }
-    public function setAdressid(string $address_id)
-    {
-        $this->address_id = $address_id;
-    }
+
     public function setName(string $name)
     {
         $this->name = $name;
     }
+
     public function setPassword(string $password)
     {
         $this->password = $password;
@@ -67,16 +62,15 @@ class User
     }
 
     // Query Operation
-    public function create(int $id)
+    public function create()
     {
-        $query = "INSERT INTO users (name, password, birth_date) VALUES (:name, :password, :birth_date)";
-        $stmt = $this->database->connect()->prepare($query);
+        $query = $this->database->prepare("INSERT INTO users (name, password, birth_date) VALUES (:name, :password, :birth_date)");
 
-        $stmt->bindParam(':name', $this->name);
-        $stmt->bindParam(':password', $this->password);
-        $stmt->bindParam(':birth_date', $this->birth_date);
+        $query->bindParam(':name', $this->name);
+        $query->bindParam(':password', $this->password);
+        $query->bindParam(':birth_date', $this->birth_date);
 
-        if ($stmt->execute()) {
+        if ($query->execute()) {
             return true;
         } else {
             return false;
@@ -85,17 +79,17 @@ class User
 
     public function read(int $id): bool
     {
-        $query = "SELECT * FROM users WHERE id = :id";
-        $stmt = $this->database->prepare($query);
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
-        $stmt->execute();
+        $query = $this->database->prepare('SELECT * FROM users WHERE id = :id');
+        $query->execute([':id' => $id]);
+        $user = $query->fetch();
 
-        if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $this->id = $row['id'];
-            $this->address_id = $row['address_id'];
-            $this->name = $row['name'];
-            $this->password = $row['password'];
-            $this->birth_date = $row['birth_date'];
+        if (!is_null($user)) {
+
+            $this->setId($user['id']);
+            $this->setName($user['name']);
+            $this->setPassword($user['password']);
+            $this->setBirthDate($user['birth_date']);
+
             return true;
         } else {
             return false;
@@ -104,16 +98,14 @@ class User
 
     public function update(int $id)
     {
-        $query = "UPDATE users SET name = :name, password = :password, birth_date = :birth_date WHERE id = :id";
-        $stmt = $this->database->connect()->prepare($query);
+        $query = $this->database->prepare("UPDATE users SET name = :name, password = :password, birth_date = :birth_date WHERE id = :id");
 
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $query->bindParam(':id', $id, \PDO::PARAM_INT);
+        $query->bindParam(':name', $this->name);
+        $query->bindParam(':password', $this->password);
+        $query->bindParam(':birth_date', $this->birth_date);
 
-        $stmt->bindParam(':name', $this->name);
-        $stmt->bindParam(':password', $this->password);
-        $stmt->bindParam(':birth_date', $this->birth_date);
-
-        if ($stmt->execute()) {
+        if ($query->execute()) {
             return true;
         } else {
             return false;
@@ -122,12 +114,10 @@ class User
 
     public function delete(int $id)
     {
-        $query = "DELETE FROM users WHERE id = :id";
-        $stmt = $this->database->connect()->prepare($query);
+        $query = $this->database->prepare("DELETE FROM users WHERE id = :id");
+        $query->bindParam(':id', $id, \PDO::PARAM_INT);
 
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
-
-        if ($stmt->execute()) {
+        if ($query->execute()) {
             return true;
         } else {
             return false;
