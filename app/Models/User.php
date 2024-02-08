@@ -9,6 +9,7 @@ class User
     private $database;
     protected $id;
     protected $name;
+    protected $email;
     protected $password;
     protected $birth_date;
 
@@ -33,12 +34,15 @@ class User
         return $this->name;
     }
 
+    public function getEmail()
+    {
+        return $this->email;
+    }
 
     public function getBirthDate()
     {
         return $this->birth_date;
     }
-
 
     // Setters
     public function setId(string $id)
@@ -49,6 +53,10 @@ class User
     public function setName(string $name)
     {
         $this->name = $name;
+    }
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
     }
 
     public function setPassword(string $password)
@@ -64,13 +72,15 @@ class User
     // Query Operation
     public function create()
     {
-        $query = $this->database->prepare("INSERT INTO users (name, password, birth_date) VALUES (:name, :password, :birth_date)");
+        $query = $this->database->prepare("INSERT INTO users (name, email, password, birth_date) VALUES (:name, :email, :password, :birth_date)");
 
         $query->bindParam(':name', $this->name);
+        $query->bindParam(':email', $this->email);
         $query->bindParam(':password', $this->password);
         $query->bindParam(':birth_date', $this->birth_date);
 
         if ($query->execute()) {
+            $this->setId($this->database->lastInsertId());
             return true;
         } else {
             return false;
@@ -87,6 +97,7 @@ class User
 
             $this->setId($user['id']);
             $this->setName($user['name']);
+            $this->setEmail($user['email']);
             $this->setPassword($user['password']);
             $this->setBirthDate($user['birth_date']);
 
@@ -98,10 +109,11 @@ class User
 
     public function update(int $id)
     {
-        $query = $this->database->prepare("UPDATE users SET name = :name, password = :password, birth_date = :birth_date WHERE id = :id");
+        $query = $this->database->prepare("UPDATE users SET name = :name, email = :email, password = :password, birth_date = :birth_date WHERE id = :id");
 
         $query->bindParam(':id', $id, \PDO::PARAM_INT);
         $query->bindParam(':name', $this->name);
+        $query->bindParam(':email', $this->email);
         $query->bindParam(':password', $this->password);
         $query->bindParam(':birth_date', $this->birth_date);
 

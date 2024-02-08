@@ -134,7 +134,7 @@ class Address
         $query->bindParam(':postal_code', $this->postal_code);
 
         if ($query->execute()) {
-            $this->id = $this->database->lastInsertId();
+            $this->setId($this->database->lastInsertId());
             return true;
         } else {
             return false;

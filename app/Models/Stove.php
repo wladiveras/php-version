@@ -133,22 +133,22 @@ class Stove
     public function create(): bool
     {
 
-        $stmt = $this->database->connect()->prepare(
+        $query = $this->database->prepare(
             "INSERT INTO stoves (burners, oven, lighters, lamp, lamp_color, stove_color, has_glass, glass_x, glass_y) VALUES (:burners, :oven, :lighters, :lamp, :lamp_color, :stove_color, :has_glass, :glass_x, :glass_y)"
         );
 
-        $stmt->bindParam(':burners', $this->burners);
-        $stmt->bindParam(':oven', $this->oven);
-        $stmt->bindParam(':lighters', $this->lighters);
-        $stmt->bindParam(':lamp', $this->lamp);
-        $stmt->bindParam(':lamp_color', $this->lamp_color);
-        $stmt->bindParam(':stove_color', $this->stove_color);
-        $stmt->bindParam(':has_glass', $this->has_glass);
-        $stmt->bindParam(':glass_x', $this->glass_x);
-        $stmt->bindParam(':glass_y', $this->glass_y);
+        $query->bindParam(':burners', $this->burners);
+        $query->bindParam(':oven', $this->oven);
+        $query->bindParam(':lighters', $this->lighters);
+        $query->bindParam(':lamp', $this->lamp);
+        $query->bindParam(':lamp_color', $this->lamp_color);
+        $query->bindParam(':stove_color', $this->stove_color);
+        $query->bindParam(':has_glass', $this->has_glass);
+        $query->bindParam(':glass_x', $this->glass_x);
+        $query->bindParam(':glass_y', $this->glass_y);
 
-        if ($stmt->execute()) {
-            $this->setId($this->database->connect()->lastInsertId());
+        if ($query->execute()) {
+            $this->setId($this->database->lastInsertId());
             return true;
         } else {
             return false;
