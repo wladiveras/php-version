@@ -20,6 +20,7 @@ class UsersController
 
         return Response::json([
             'sucess' => $read,
+            'message' => $read ? null : 'something went wrong',
             'data' => $user->getId()
         ]);
     }
@@ -32,7 +33,8 @@ class UsersController
 
         return Response::json([
             'sucess' => $read,
-            'data' => $user->getId()
+            'message' => $read ? null : 'something went wrong',
+            'data' => $user->getAll()
         ]);
     }
 
@@ -52,6 +54,7 @@ class UsersController
 
         return Response::json([
             'sucess' => $create,
+            'message' => $create ? null : 'something went wrong',
             'data' => $user->getId()
         ]);
     }
@@ -71,6 +74,7 @@ class UsersController
 
         return Response::json([
             'sucess' => $update,
+            'message' => $update ? null : 'something went wrong',
             'data' => $request['id']
         ]);
     }
@@ -84,6 +88,7 @@ class UsersController
 
         return Response::json([
             'sucess' => $delete,
+            'message' => $delete ? null : 'something went wrong',
             'data' => $request['id']
         ]);
     }

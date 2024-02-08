@@ -54,6 +54,7 @@ class User
     {
         $this->name = $name;
     }
+
     public function setEmail(string $email)
     {
         $this->email = $email;
@@ -69,69 +70,92 @@ class User
         $this->birth_date = $birth_date;
     }
 
+    public function getAll(): array
+    {
+        return [
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+            "email" => $this->getName(),
+            "birth_date" => $this->getBirthDate(),
+        ];
+    }
+
     // Query Operation
     public function create()
     {
-        $query = $this->database->prepare("INSERT INTO users (name, email, password, birth_date) VALUES (:name, :email, :password, :birth_date)");
+        try {
+            $query = $this->database->prepare("INSERT INTO users (name, email, password, birth_date) VALUES (:name, :email, :password, :birth_date)");
 
-        $query->bindParam(':name', $this->name);
-        $query->bindParam(':email', $this->email);
-        $query->bindParam(':password', $this->password);
-        $query->bindParam(':birth_date', $this->birth_date);
+            $query->bindParam(':name', $this->name);
+            $query->bindParam(':email', $this->email);
+            $query->bindParam(':password', $this->password);
+            $query->bindParam(':birth_date', $this->birth_date);
 
-        if ($query->execute()) {
-            $this->setId($this->database->lastInsertId());
-            return true;
-        } else {
+            if ($query->execute()) {
+                $this->setId($this->database->lastInsertId());
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\PDOException $e) {
             return false;
         }
     }
 
     public function read(int $id): bool
     {
-        $query = $this->database->prepare('SELECT * FROM users WHERE id = :id');
-        $query->execute([':id' => $id]);
-        $user = $query->fetch();
+        try {
+            $query = $this->database->prepare('SELECT * FROM users WHERE id = :id');
+            $query->execute([':id' => $id]);
 
-        if (!is_null($user)) {
+            $user = $query->fetch();
 
-            $this->setId($user['id']);
-            $this->setName($user['name']);
-            $this->setEmail($user['email']);
-            $this->setPassword($user['password']);
-            $this->setBirthDate($user['birth_date']);
+            if ($user) {
+                $this->setId($user['id']);
+                $this->setName($user['name']);
+                $this->setEmail($user['email']);
+                $this->setPassword($user['password']);
+                $this->setBirthDate($user['birth_date']);
 
-            return true;
-        } else {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\PDOException $e) {
             return false;
         }
     }
 
     public function update(int $id)
     {
-        $query = $this->database->prepare("UPDATE users SET name = :name, email = :email, password = :password, birth_date = :birth_date WHERE id = :id");
+        try {
+            $query = $this->database->prepare("UPDATE users SET name = :name, email = :email, password = :password, birth_date = :birth_date WHERE id = :id");
+            $query->bindParam(':name', $this->name);
+            $query->bindParam(':email', $this->email);
+            $query->bindParam(':password', $this->password);
+            $query->bindParam(':birth_date', $this->birth_date);
 
-        $query->bindParam(':id', $id, \PDO::PARAM_INT);
-        $query->bindParam(':name', $this->name);
-        $query->bindParam(':email', $this->email);
-        $query->bindParam(':password', $this->password);
-        $query->bindParam(':birth_date', $this->birth_date);
-
-        if ($query->execute()) {
-            return true;
-        } else {
+            if ($query->execute([':id' => $id])) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\PDOException $e) {
             return false;
         }
     }
 
     public function delete(int $id)
     {
-        $query = $this->database->prepare("DELETE FROM users WHERE id = :id");
-        $query->bindParam(':id', $id, \PDO::PARAM_INT);
+        try {
+            $query = $this->database->prepare("DELETE FROM users WHERE id = :id");
 
-        if ($query->execute()) {
-            return true;
-        } else {
+            if ($query->execute([':id' => $id])) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\PDOException $e) {
             return false;
         }
     }
