@@ -13,7 +13,6 @@ class UsersController
 
     public function index(Request $request)
     {
-
         $user = new User();
         $user->getName();
 
@@ -21,6 +20,11 @@ class UsersController
     }
     public function show(Request $request, int $id)
     {
+        $user = new User();
+        $user->setId($id);
+        $user->read();
+        $user->getName();
+
         return Response::json(['action' => 'show', 'id' => $id, 'request' => $request]);
     }
 
@@ -28,16 +32,31 @@ class UsersController
     {
         $request = $request->getJson();
 
+        $user = new User();
+        $user->setName('John Doe');
+        $user->setPassword('secret');
+        $user->setBirthDate('1990-01-01');
+        $user->create();
+
         return Response::json(['action' => 'store', 'request' => $request]);
     }
 
     public function update(Request $request)
     {
+        $user = new User();
+        $user->setName('Jane Doe');
+        $user->setPassword('new_secret');
+        $user->setBirthDate('1991-01-01');
+        $user->update();
+
         return Response::json(['action' => 'update', 'request' => $request]);
     }
 
     public function delete(int $id)
     {
+        $user = new User();
+        $user->setId(1);
+        $user->delete();
         return Response::json(['action' => 'delete', 'id' => $id]);
     }
 }

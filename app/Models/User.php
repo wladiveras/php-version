@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Config\Database;
+use App\Core\Database;
 
 class User
 {
@@ -15,7 +15,7 @@ class User
 
     public function __construct()
     {
-        $this->database =  Database::connect();
+        $this->database = Database::connect();
     }
 
     public function __destruct()
@@ -56,6 +56,10 @@ class User
     {
         $this->name = $name;
     }
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
+    }
 
     public function setBirthDate(string $birth_date)
     {
@@ -67,7 +71,7 @@ class User
     {
         $query = "INSERT INTO users (name, password, birth_date) VALUES (?, ?, ?)";
         $stmt = $this->database->connect()->prepare($query);
-        $stmt->bind_param("sss", $this->name, $this->password, $this->birth_date);
+        $stmt->bind_param("sss", $this->name, md5($this->password), $this->birth_date);
         if ($stmt->execute()) {
             return true;
         } else {
@@ -84,11 +88,10 @@ class User
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $this->id = $row['id'];
-                $this->address_id = $row['address_id'];
-                $this->name = $row['name'];
-                $this->password = $row['password'];
-                $this->birth_date = $row['birth_date'];
+                $this->setId($row['id']);
+                $this->setAdressid($row['address_id']);
+                $this->setName($row['name']);
+                $this->setBirthDate($row['birth_date']);
             }
         } else {
             return false;
@@ -99,7 +102,7 @@ class User
     {
         $query = "UPDATE users SET name = ?, password = ?, birth_date = ? WHERE id = ?";
         $stmt = $this->database->connect()->prepare($query);
-        $stmt->bind_param("sssi", $this->name, $this->password, $this->birth_date, $this->id);
+        $stmt->bind_param("sssi", $this->name, md5($this->password), $this->birth_date, $this->id);
         if ($stmt->execute()) {
             return true;
         } else {

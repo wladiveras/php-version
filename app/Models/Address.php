@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Config\Database;
+use App\Core\Database;
 
 class Address
 {

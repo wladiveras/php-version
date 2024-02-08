@@ -1,5 +1,7 @@
 <?php
 
+namespace Config;
+
 define('SITE_NAME', 'Fogão');
 
 define('APP_ROOT', dirname(dirname(__FILE__)));
