@@ -23,12 +23,14 @@ class UsersController
 
     public function create(Request $request)
     {
+        $request = $request->getJson();
+
         return Response::json(['action' => 'store', 'request' => $request]);
     }
 
-    public function update(Request $request, int $id)
+    public function update(Request $request)
     {
-        return Response::json(['action' => 'update', 'id' => $id, 'request' => $request]);
+        return Response::json(['action' => 'update', 'request' => $request]);
     }
 
     public function delete(int $id)

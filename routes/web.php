@@ -12,10 +12,18 @@ $router->get('/', function () {
     return 'Hello Worldinelson';
 });
 
-$router->post('/some/route', function ($id, Request $request) {
+$router->put('/', function () {
+    return 'Hello put';
+});
 
-    //$body = $request->getBody();
+$router->delete('/', function () {
+    return 'Hello deletre';
+});
+
+
+
+$router->post('/', function (Request $request) {
 
     $controller = new UsersController();
-    return $controller->update($request, $id);
+    $controller->update($request);
 });

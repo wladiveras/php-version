@@ -2,17 +2,17 @@
 
 namespace App\Core;
 
-use Core\Interface\IRequest;
-
 class Router
 {
     private $request;
     private $supportedHttpMethods = array(
         "GET",
-        "POST"
+        "POST",
+        "PUT",
+        "DELETE"
     );
 
-    function __construct(IRequest $request)
+    function __construct($request)
     {
         $this->request = $request;
     }
@@ -28,10 +28,6 @@ class Router
         $this->{strtolower($name)}[$this->formatRoute($route)] = $method;
     }
 
-    /**
-     * Removes trailing forward slashes from the right of the route.
-     * @param route (string)
-     */
     private function formatRoute($route)
     {
         $result = rtrim($route, '/');
@@ -51,9 +47,6 @@ class Router
         header("{$this->request->serverProtocol} 404 Not Found");
     }
 
-    /**
-     * Resolves a route
-     */
     function resolve()
     {
         $methodDictionary = $this->{strtolower($this->request->requestMethod)};

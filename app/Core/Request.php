@@ -49,5 +49,24 @@ class Request implements IRequest
 
             return $body;
         }
+
+        if ($this->requestMethod == "PUT") {
+
+            $body = array();
+            foreach ($_POST as $key => $value) {
+                $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+            }
+
+            return $body;
+        }
+
+        if ($this->requestMethod == "DELETE") {
+            return;
+        }
+    }
+
+    public function getJson()
+    {
+        return json_decode(file_get_contents('php://input'), true);
     }
 }

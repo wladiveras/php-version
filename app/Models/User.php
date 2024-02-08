@@ -8,6 +8,7 @@ class User
 {
     private $database;
     protected $id;
+    protected $address_id;
     protected $name;
     protected $password;
     protected $birth_date;
