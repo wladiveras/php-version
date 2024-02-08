@@ -171,7 +171,7 @@ class Stove
         }
     }
 
-    public function read(int $id): bool
+    public function read($id): bool
     {
         try {
             $query = $this->database->prepare("SELECT * FROM stoves WHERE id = :id");

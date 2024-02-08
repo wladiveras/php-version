@@ -106,17 +106,17 @@ class Address
         $this->complement = $complement;
     }
 
-    public function setNeighbourhood($neighbourhood)
+    public function setNeighbourhood(string $neighbourhood)
     {
         $this->neighbourhood = $neighbourhood;
     }
 
-    public function setCountry($country)
+    public function setCountry(string $country)
     {
         $this->country = $country;
     }
 
-    public function setPostalCode($postal_code)
+    public function setPostalCode(string $postal_code)
     {
         $this->postal_code = $postal_code;
     }
@@ -125,8 +125,6 @@ class Address
     {
         return [
             "id" => $this->getId(),
-            "user_id" => $this->getUserId(),
-            "city_id" => $this->getCityId(),
             "number" => $this->getNumber(),
             "street" => $this->getStreet(),
             "complement" => $this->getComplement(),
@@ -177,7 +175,7 @@ class Address
         }
     }
 
-    public function read(int $id, $user_id = false): bool
+    public function read($id, $user_id = false): bool
     {
         try {
             if ($user_id) {

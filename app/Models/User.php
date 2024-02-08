@@ -88,7 +88,10 @@ class User
     public function getAddress(): Address | array
     {
 
-        $this->address->read($this->getId(), true);
+        if ($this->getId()) {
+            $this->address->read($this->getId(), true);
+        }
+
         $this->setAddress($this->address->getAll());
 
         return $this->address;
@@ -121,7 +124,7 @@ class User
         }
     }
 
-    public function read(int $id): bool
+    public function read($id): bool
     {
         try {
             $query = $this->database->prepare('SELECT * FROM users WHERE id = :id');

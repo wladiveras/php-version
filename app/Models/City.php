@@ -57,7 +57,6 @@ class City
     {
         return [
             "id" => $this->getId(),
-            "state_id" => $this->getStateId(),
             "name" => $this->getName(),
             "state" => $this->getState(),
         ];
@@ -96,7 +95,7 @@ class City
         }
     }
 
-    public function read(int $id, $state_id = false): bool
+    public function read($id, $state_id = false): bool
     {
         try {
             if ($state_id) {
