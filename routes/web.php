@@ -25,5 +25,5 @@ $router->delete('/', function () {
 $router->post('/', function (Request $request) {
 
     $controller = new UsersController();
-    $controller->update($request);
+    $controller->create($request);
 });
