@@ -4,12 +4,15 @@ namespace App\Helpers;
 
 class Parse
 {
-    static public function result($success, $result, $message = 'Something went wrong'): array
+    static public function result(mixed $result = [], bool $action = false, array $errors = ['generic' => 'something went wrong']): array
     {
-        return [
-            'sucess' => $success,
-            'message' => $success ?  '' : $message,
-            'data' => $success ? $result : []
+
+        $response = [
+            'success' => $action,
+            'errors' => $action ?  [] : $errors,
+            'data' => $action ? $result : [],
         ];
+
+        return $response;
     }
 }

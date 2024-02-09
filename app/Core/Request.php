@@ -33,40 +33,67 @@ class Request implements IRequest
         return $result;
     }
 
-    public function getBody()
+
+
+    public function getBody($associative = true, $depth = 512, $options = 0)
     {
-        if ($this->requestMethod === "GET") {
-            return;
+        $json = file_get_contents('php://input');
+
+        if ($json === false) {
+            return null;
         }
 
-
-        if ($this->requestMethod == "POST") {
-
-            $body = array();
-            foreach ($_POST as $key => $value) {
-                $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
-
-            return $body;
-        }
-
-        if ($this->requestMethod == "PUT") {
-
-            $body = array();
-            foreach ($_POST as $key => $value) {
-                $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
-
-            return $body;
-        }
-
-        if ($this->requestMethod == "DELETE") {
-            return;
-        }
+        return (object) json_decode($json, $associative, $depth, $options);
     }
 
-    public function getJson()
+    function getQueryParameters()
     {
-        return json_decode(file_get_contents('php://input'), true);
+        $queryString = $_SERVER['QUERY_STRING'] ?? '';
+        $queryParameters = [];
+
+        parse_str($queryString, $queryParameters);
+
+        return (object) $queryParameters;
+    }
+
+    public function getString($name, $default = null)
+    {
+        if (isset($_GET[$name])) {
+            return filter_input(INPUT_GET, $name, FILTER_SANITIZE_SPECIAL_CHARS);
+        }
+
+        return $default;
+    }
+
+    public function getJson($name, $default = null, $associative = true, $depth = 512, $options = 0)
+    {
+        $json = file_get_contents('php://input');
+
+        if ($json === false) {
+            return null;
+        }
+
+        $data = json_decode($json, $associative, $depth, JSON_THROW_ON_ERROR | $options);
+
+        return $this->extractProperty($data, explode('.', $name)) ?? $default;
+    }
+
+    private function extractProperty($data, $keys)
+    {
+        if (empty($keys)) {
+            return $data;
+        }
+
+        $key = array_shift($keys);
+
+        if (is_array($data) && array_key_exists($key, $data)) {
+            return $this->extractProperty($data[$key], $keys);
+        }
+
+        if (is_object($data) && property_exists($data, $key)) {
+            return $this->extractProperty($data->$key, $keys);
+        }
+
+        return null;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+
 class Router
 {
     private $request;
@@ -34,6 +35,13 @@ class Router
         if ($result === '') {
             return '/';
         }
+
+        $queryStringIndex = strpos($result, '?');
+
+        if ($queryStringIndex !== false) {
+            $result = substr($result, 0, $queryStringIndex);
+        }
+
         return $result;
     }
 

@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 class Response
 {
-    static public function json($data)
+    static public function json(mixed $data, int $code = 200)
     {
         header("Content-Type: application/json");
 
@@ -14,7 +14,11 @@ class Response
             $response = '{"jsonError":"unknown"}';
         }
 
-        http_response_code(($response === false) ? 500 : 200);
+        $responseCode = $response === false ? 500 : $code;
+
+        if ($responseCode) {
+            http_response_code($responseCode);
+        }
 
         echo $response;
     }

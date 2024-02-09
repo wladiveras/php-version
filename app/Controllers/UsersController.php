@@ -3,74 +3,113 @@
 namespace App\Controllers;
 
 
-use App\Models\User;
 use App\Core\Request;
+use App\Models\User;
 use App\Helpers\Response;
+use App\Helpers\Validator;
 use App\Helpers\Parse;
 
 
 class UsersController
 {
 
-    public function index(Request $request)
-    {
-        $request = $request->getJson();
-
-        $user = new User();
-        $success = $user->read($request['id']);
-
-        return Response::json(Parse::result($success, $user->getId()));
-    }
     public function show(Request $request)
     {
-        $request = $request->getJson();
+        $request = $request->getQueryParameters();
 
         $user = new User();
-        $success = $user->read($request['id']);
+        $action = $user->read($request->id);
 
-        return Response::json(Parse::result($success, $user->getAll()));
+        if (!$action) {
+            return Response::json(
+                Parse::result(action: $action, errors: ["message" => "cannot find this user, try a different id."]),
+                code: 404
+            );
+        }
+
+        return Response::json(
+            Parse::result(result: $user->getAll(), action: $action),
+        );
     }
 
     public function create(Request $request)
     {
+        $request = $request->getBody();
 
-        $request = $request->getJson();
+        $errors = Validator::validate($request, [
+            'id' => ['required'],
+            'name' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+            'birth_date' => ['required'],
+        ]);
 
-        $user = new User();
+        if (!empty($errors)) {
+            return Response::json(Parse::result(errors: $errors));
+        } else {
+            $user = new User();
 
-        $user->setName($request['name']);
-        $user->setEmail($request['email']);
-        $user->setPassword($request['password']);
-        $user->setBirthDate($request['birth_date']);
+            $user->setName($request->name);
+            $user->setEmail($request->email);
+            $user->setPassword($request->password);
+            $user->setBirthDate($request->birth_date);
 
-        $success = $user->create();
+            $action = $user->create();
+            $ErrorMessage = ["create" => "cannot create a user account at this moment, try again later."];
 
-        return Response::json(Parse::result($success, $user->getId()));
+            return Response::json(Parse::result($action, $user->getId(), $ErrorMessage));
+        }
     }
 
     public function update(Request $request)
     {
-        $request = $request->getJson();
+        $request = $request->getBody();
 
-        $user = new User();
+        $errors = Validator::validate($request, [
+            'id' => ['required'],
+            'name' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+            'birth_date' => ['required'],
+        ]);
 
-        $user->setName($request['name']);
-        $user->setEmail($request['email']);
-        $user->setPassword($request['password']);
-        $user->setBirthDate($request['birth_date']);
+        if (!empty($errors)) {
+            return Response::json(Parse::result(errors: $errors));
+        } else {
+            $user = new User();
 
-        $success = $user->update($request['id']);
+            $user->setName($request->name);
+            $user->setEmail($request->email);
+            $user->setPassword($request->password);
+            $user->setBirthDate($request->birth_date);
 
-        return Response::json(Parse::result($success, $user->getAll()));
+            $action = $user->update($request->id);
+            $ErrorMessage = ["create" => "cannot create a user account at this moment, try again later."];
+
+            return Response::json(Parse::result($user->getAll(), $action, $ErrorMessage));
+        }
     }
 
     public function delete(Request $request)
     {
-        $request = $request->getJson();
+        $request = $request->getBody();
 
-        $user = new User();
-        $success = $user->delete($request['id']);
+        $errors = Validator::validate($request, [
+            'id' => ['required'],
+        ]);
 
-        return Response::json(Parse::result($success, $request['id']));
+        if (!empty($errors)) {
+            return Response::json(Parse::result(errors: $errors));
+        } else {
+            $id = $request->getJson('id');
+            $ErrorMessage = "Connot update user at this moment, try again later.";
+
+            if ($id) {
+                $user = new User();
+                $action = $user->delete($id);
+            }
+
+            return Response::json(Parse::result($id, $action, $ErrorMessage));
+        }
     }
 }
