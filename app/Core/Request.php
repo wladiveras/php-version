@@ -46,7 +46,7 @@ class Request implements IRequest
         return (object) json_decode($json, $associative, $depth, $options);
     }
 
-    function getQueryParameters()
+    function getQuery()
     {
         $queryString = $_SERVER['QUERY_STRING'] ?? '';
         $queryParameters = [];

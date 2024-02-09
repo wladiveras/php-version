@@ -4,25 +4,26 @@ namespace App\Helpers;
 
 class Validator
 {
-    public static function validate($data, $rules)
+    static public function validate($request, $rules)
     {
-        $data = json_encode($data, true);
         $errors = [];
 
-        foreach ($rules as $field => $ruleset) {
-            $value = $data[$field] ?? '';
-            foreach ($ruleset as $rule) {
+        foreach ($rules as $field => $ruleSet) {
+            $value = $request->{$field};
+
+            foreach ($ruleSet as $rule) {
                 switch ($rule) {
                     case 'required':
                         if (empty($value)) {
-                            $errors[$field][] = "The $field field is required.";
+                            $errors[$field][] = "$field is required.";
                         }
                         break;
                     case 'email':
                         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                            $errors[$field][] = "The $field field must be a valid email.";
+                            $errors[$field][] = "$field must be a valid email address.";
                         }
                         break;
+                        // Add more validation rules here
                 }
             }
         }
