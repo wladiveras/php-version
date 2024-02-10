@@ -48,7 +48,7 @@ class User
     }
 
     // Setters
-    public function setId(int $id)
+    private function setId(int $id)
     {
         $this->id = $id;
     }
@@ -150,14 +150,19 @@ class User
 
     public function update(int $id)
     {
-        try {
-            $query = $this->database->prepare("UPDATE users SET name = :name, email = :email, password = :password, birth_date = :birth_date WHERE id = :id");
-            $query->bindParam(':name', $this->name);
-            $query->bindParam(':email', $this->email);
-            $query->bindParam(':password', $this->password);
-            $query->bindParam(':birth_date', $this->birth_date);
 
-            if ($query->execute([':id' => $id])) {
+        try {
+            $query = $this->database->prepare("UPDATE users SET name = COALESCE(:name, name), email = COALESCE(:email, email), password = COALESCE(:password, password), birth_date = COALESCE(:birth_date, birth_date) WHERE id = :id");
+
+            $values = [
+                ':id' => $id,
+                ':name' => isset($this->name) ? $this->name : null,
+                ':email' => isset($this->email) ? $this->email : null,
+                ':password' => isset($this->password) ? $this->password : null,
+                ':birth_date' => isset($this->birth_date) ? $this->birth_date : null,
+            ];
+
+            if ($query->execute($values)) {
                 return true;
             } else {
                 return false;

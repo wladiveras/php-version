@@ -81,10 +81,8 @@ class UsersController
         $errors = Validator::validate($request, [
             'id' => ['required', 'int'],
             'name' => ['required', 'string', 'min' => 5, 'max' => 50],
-            'email' => ['required', 'email'],
             'password' => ['required', 'min' => 8, 'max' => 16],
             'password_confirm' => ['required', 'password_match'],
-            'birth_date' => ['required', 'birth_date'],
         ]);
 
         if (!empty($errors)) {
@@ -96,9 +94,7 @@ class UsersController
             $user = new User();
 
             $user->setName($request->name);
-            $user->setEmail($request->email);
             $user->setPassword($request->password);
-            $user->setBirthDate($request->birth_date);
 
             $action = $user->update($request->id);
 
@@ -109,6 +105,8 @@ class UsersController
                 );
             }
 
+            $user->read($request->id);
+
             return Response::json(
                 data: Parse::result(result: $user->getAll(), action: $action),
                 code: 200
@@ -118,9 +116,8 @@ class UsersController
 
     public function delete(Request $request)
     {
-        $request = $request->getBody();
 
-        $errors = Validator::validate($request, [
+        $errors = Validator::validate($request->getBody(), [
             'id' => ['required', 'int'],
         ]);
 
@@ -133,6 +130,16 @@ class UsersController
             $id = $request->getJson('id');
 
             $user = new User();
+
+            $action = $user->read($id);
+
+            if (!$action) {
+                return Response::json(
+                    data: Parse::result(errors: ["message" => "cannot find this user, try a different id."]),
+                    code: 404
+                );
+            }
+
             $action = $user->delete($id);
 
             if (!$action) {

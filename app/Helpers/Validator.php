@@ -21,7 +21,7 @@ class Validator
                         }
                         break;
                     case 'string':
-                        $pattern = '/^[a-zA-Z0-9 ]+$/';
+                        $pattern = '/^[\p{L}\p{Zs} ]+$/';
                         if (!preg_match($pattern, $value)) {
                             $errors[$field][] = "$field must be a valid string.";
                         }
