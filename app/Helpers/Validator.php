@@ -21,7 +21,7 @@ class Validator
                         }
                         break;
                     case 'string':
-                        $pattern = '/^[a-zA-Z0-9]+$/';
+                        $pattern = '/^[a-zA-Z0-9 ]+$/';
                         if (!preg_match($pattern, $value)) {
                             $errors[$field][] = "$field must be a valid string.";
                         }
@@ -37,7 +37,7 @@ class Validator
                         }
                         break;
                     case 'password_match':
-                        if (!empty($value) && $value !== $request->password_confirm) {
+                        if (!empty($value) && $value !== $request->password) {
                             $errors[$field][] = "Passwords do not match.";
                         }
                         break;
