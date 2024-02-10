@@ -124,7 +124,7 @@ class User
         }
     }
 
-    public function read($id): bool
+    public function read(int| null $id): bool
     {
         try {
             $query = $this->database->prepare('SELECT * FROM users WHERE id = :id');

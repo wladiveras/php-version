@@ -38,10 +38,11 @@ class UsersController
         $request = $request->getBody();
 
         $errors = Validator::validate($request, [
-            'name' => ['required'],
+            'name' => ['required', 'string', 'min' => 5, 'max' => 50],
             'email' => ['required', 'email'],
-            'password' => ['required'],
-            'birth_date' => ['required'],
+            'password' => ['required', 'min' => 8, 'max' => 16],
+            'password_confirm' => ['required', 'password_match'],
+            'birth_date' => ['required', 'birth_date'],
         ]);
 
         if (!empty($errors)) {
@@ -78,11 +79,12 @@ class UsersController
         $request = $request->getBody();
 
         $errors = Validator::validate($request, [
-            'id' => ['required'],
-            'name' => ['required'],
+            'id' => ['required', 'int'],
+            'name' => ['required', 'string', 'min' => 5, 'max' => 50],
             'email' => ['required', 'email'],
-            'password' => ['required'],
-            'birth_date' => ['required'],
+            'password' => ['required', 'min' => 8, 'max' => 16],
+            'password_confirm' => ['required', 'password_match'],
+            'birth_date' => ['required', 'birth_date'],
         ]);
 
         if (!empty($errors)) {
@@ -119,7 +121,7 @@ class UsersController
         $request = $request->getBody();
 
         $errors = Validator::validate($request, [
-            'id' => ['required'],
+            'id' => ['required', 'int'],
         ]);
 
         if (!empty($errors)) {
