@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Helpers\Response;
 use App\Helpers\Validator;
 use App\Helpers\Parse;
-
+use DateTime;
 
 class UsersController
 {
@@ -51,12 +51,13 @@ class UsersController
                 code: 400
             );
         } else {
+            $now = new DateTime();
             $user = new User();
 
             $user->setName($request->name);
             $user->setEmail($request->email);
             $user->setPassword($request->password);
-            $user->setBirthDate($request->birth_date);
+            $user->setEmailVerifiedAt($now->format('Y-m-d H:i:s'));
 
             $action = $user->create();
 
@@ -150,7 +151,7 @@ class UsersController
             }
 
             return Response::json(
-                data: Parse::result(result: ['user_id' => $id], action: $action),
+                data: Parse::result(result: $id, action: $action),
                 code: 200
             );
         }

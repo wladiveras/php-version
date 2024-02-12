@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Core\Database;
 use App\Models\Address;
+use DateTime;
 
 class User
 {
@@ -13,7 +14,10 @@ class User
     protected $name;
     protected $email;
     protected $password;
-    protected $birth_date;
+    protected $remember_token;
+    protected $email_verified_at;
+    protected $created_at;
+    protected $updated_at;
 
     public function __construct()
     {
@@ -27,27 +31,47 @@ class User
     }
 
     // Getters
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getBirthDate()
+    public function getEmailVerifiedAt(): string
     {
-        return $this->birth_date;
+        return $this->email_verified_at;
+    }
+
+    public function getCreatedAt(): string
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): string
+    {
+        return $this->updated_at;
     }
 
     // Setters
+    public function setCreatedAt($created_at): void
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function setUpdatedAt($updated_at): void
+    {
+        $this->updated_at = $updated_at;
+    }
+
     private function setId(int $id)
     {
         $this->id = $id;
@@ -63,15 +87,22 @@ class User
         $this->email = $email;
     }
 
+    public function setEmailVerifiedAt(string $email_verified_at)
+    {
+        $this->email_verified_at = $email_verified_at;
+    }
+
     public function setPassword(string $password)
     {
         $this->password = $password;
     }
 
-    public function setBirthDate(string $birth_date)
+    public function getRememberToken(): string
     {
-        $this->birth_date = $birth_date;
+        return $this->remember_token;
     }
+
+
 
     public function getAll(): array
     {
@@ -79,7 +110,7 @@ class User
             "id" => $this->getId(),
             "name" => $this->getName(),
             "email" => $this->getEmail(),
-            "birth_date" => $this->getBirthDate(),
+            "email_verified" => $this->getEmailVerifiedAt() ? true : false,
             "address" => $this->getAddress()
         ];
     }
@@ -106,12 +137,17 @@ class User
     public function create()
     {
         try {
-            $query = $this->database->prepare("INSERT INTO users (name, email, password, birth_date) VALUES (:name, :email, :password, :birth_date)");
+            $query = $this->database->prepare("INSERT INTO users (name, email, email_verified_at, password, created_at, updated_at) VALUES (:name, :email, :email_verified_at, :password, :created_at, :updated_at)");
 
             $query->bindParam(':name', $this->name);
             $query->bindParam(':email', $this->email);
+            $query->bindParam(':email_verified_at', $this->email_verified_at);
             $query->bindParam(':password', $this->password);
-            $query->bindParam(':birth_date', $this->birth_date);
+            $query->bindParam(':created_at', $this->created_at);
+            $query->bindParam(':updated_at', $this->updated_at);
+
+            $this->setCreatedAt(new DateTime());
+            $this->setUpdatedAt(new DateTime());
 
             if ($query->execute()) {
                 $this->setId($this->database->lastInsertId());
@@ -137,7 +173,9 @@ class User
                 $this->setName($user['name']);
                 $this->setEmail($user['email']);
                 $this->setPassword($user['password']);
-                $this->setBirthDate($user['birth_date']);
+                $this->setEmailVerifiedAt($user['birth_date']);
+                $this->setCreatedAt($user['created_at']);
+                $this->setUpdatedAt($user['updated_at']);
 
                 return true;
             } else {
@@ -148,21 +186,28 @@ class User
         }
     }
 
-    public function update(int $id)
+    public function update(int $id): bool
     {
 
         try {
-            $query = $this->database->prepare("UPDATE users SET name = COALESCE(:name, name), email = COALESCE(:email, email), password = COALESCE(:password, password), birth_date = COALESCE(:birth_date, birth_date) WHERE id = :id");
+            $now = new DateTime();
 
-            $values = [
+            $query = $this->database->prepare("UPDATE users SET name = COALESCE(:name, name), email = COALESCE(:email, email), email_verified_at = COALESCE(:email_verified_at, email_verified_at), password = COALESCE(:password, password) WHERE id = :id");
+
+            $this->setUpdatedAt(new DateTime());
+
+            $data = [
                 ':id' => $id,
+
                 ':name' => isset($this->name) ? $this->name : null,
                 ':email' => isset($this->email) ? $this->email : null,
+                ':email_verified_at' => isset($this->email_verified_at) ? $this->email_verified_at : null,
                 ':password' => isset($this->password) ? $this->password : null,
-                ':birth_date' => isset($this->birth_date) ? $this->birth_date : null,
+
+                ':updated_at' => $now->format('Y-m-d H:i:s'),
             ];
 
-            if ($query->execute($values)) {
+            if ($query->execute($data)) {
                 return true;
             } else {
                 return false;
@@ -172,7 +217,7 @@ class User
         }
     }
 
-    public function delete(int $id)
+    public function delete(int $id): bool
     {
         try {
             $query = $this->database->prepare("DELETE FROM users WHERE id = :id");

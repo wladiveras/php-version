@@ -2,9 +2,9 @@
 
 namespace App\Core;
 
-use Core\Interface\IRequest;
 
-class Request implements IRequest
+
+class Request
 {
     public $requestMethod;
     function __construct()

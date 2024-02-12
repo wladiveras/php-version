@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Database;
+use DateTime;
 
 class State
 {
@@ -10,6 +11,8 @@ class State
     protected $id;
     protected $name;
     protected $code;
+    protected $created_at;
+    protected $updated_at;
 
     public function __construct()
     {
@@ -35,8 +38,27 @@ class State
     {
         return $this->code;
     }
+    public function getCreatedAt(): string
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): string
+    {
+        return $this->updated_at;
+    }
 
     // Setters
+    public function setCreatedAt($created_at): void
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function setUpdatedAt($updated_at): void
+    {
+        $this->updated_at = $updated_at;
+    }
+
     public function setId($id)
     {
         $this->id = $id;
@@ -52,6 +74,8 @@ class State
         $this->code = $code;
     }
 
+
+
     public function getAll(): array
     {
         return [
@@ -65,11 +89,17 @@ class State
     public function create(): bool
     {
         try {
-            $query = $this->database->prepare("INSERT INTO states ( name, code) VALUES (:name, :code)");
+            $now = new DateTime();
+
+            $query = $this->database->prepare("INSERT INTO states ( name, code, created_at, updated_at) VALUES (:name, :code, :created_at, :updated_at)");
+
+            $this->setCreatedAt($now->format('Y-m-d H:i:s'));
+            $this->setUpdatedAt($now->format('Y-m-d H:i:s'));
+
             $query->bindParam(':name', $this->name);
             $query->bindParam(':code', $this->code);
 
-            if ($query->execute()) {
+            if ($query->execute([':created_at' => $this->created_at, ':updated_at' => $this->updated_at])) {
                 $this->setId($this->database->lastInsertId());
                 return true;
             } else {
@@ -92,6 +122,9 @@ class State
                 $this->setId($state['id']);
                 $this->setName($state['name']);
                 $this->setCode($state['code']);
+                $this->setCreatedAt($state['created_at']);
+                $this->setUpdatedAt($state['updated_at']);
+
                 return true;
             } else {
                 return false;
@@ -104,11 +137,20 @@ class State
     public function update(int $id): bool
     {
         try {
-            $query = $this->database->prepare("UPDATE states SET name = :name, code = :code WHERE id = :id");
-            $query->bindParam(':name', $this->name);
-            $query->bindParam(':code', $this->code);
+            $now = new DateTime();
 
-            if ($query->execute([':id' => $id])) {
+            $query = $this->database->prepare("UPDATE states SET name = COALESCE(:name, name), code = COALESCE(:code, code),  updated_at = :updated_at  WHERE id = :id");
+
+            $data = [
+                ':id' => $id,
+
+                ':name' => isset($this->name) ? $this->name : null,
+                ':code' => isset($this->code) ? $this->code : null,
+
+                ':updated_at' => $now->format('Y-m-d H:i:s'),
+            ];
+
+            if ($query->execute($data)) {
                 return true;
             } else {
                 return false;
