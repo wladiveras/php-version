@@ -203,31 +203,16 @@ class Address
         }
     }
 
-    public function read($id, $user_id = false): bool
+    public function read(int $id): bool
     {
         try {
-            if ($user_id) {
-                $query = $this->database->prepare("SELECT * FROM addresses WHERE user_id = :id");
-            } else {
-                $query = $this->database->prepare("SELECT * FROM addresses WHERE id = :id");
-            }
-
+            $query = $this->database->prepare('SELECT * FROM addresses WHERE id = :id');
             $query->execute([':id' => $id]);
 
-            $address = $query->fetch();
+            $data = $query->fetch();
 
-            if ($address) {
-                $this->setId($address['id']);
-                $this->setUserId($address['user_id']);
-                $this->SetCityId($address['city_id']);
-                $this->setNumber($address['number']);
-                $this->setStreet($address['street']);
-                $this->setComplement($address['complement']);
-                $this->setNeighbourhood($address['neighbourhood']);
-                $this->setCountry($address['country']);
-                $this->setPostalCode($address['postal_code']);
-                $this->setCreatedAt($address['created_at']);
-                $this->setUpdatedAt($address['updated_at']);
+            if ($data) {
+                $this->createObject($data);
                 return true;
             } else {
                 return false;
@@ -235,6 +220,41 @@ class Address
         } catch (\PDOException $e) {
             return false;
         }
+    }
+
+    public function readAll(): array
+    {
+        try {
+            $query = $this->database->query('SELECT * FROM addresses');
+
+            $query = $query->fetchAll();
+
+            $response = [];
+            foreach ($query as $data) {
+                $response[] = $this->createObject($data);
+            }
+
+            return $response;
+        } catch (\PDOException $e) {
+            throw new \Exception("Failed to get all public data: " . $e->getMessage());
+        }
+    }
+
+    private function createObject(array $data): array
+    {
+        $this->setId($data['id']);
+        $this->setUserId($data['user_id']);
+        $this->SetCityId($data['city_id']);
+        $this->setNumber($data['number']);
+        $this->setStreet($data['street']);
+        $this->setComplement($data['complement']);
+        $this->setNeighbourhood($data['neighbourhood']);
+        $this->setCountry($data['country']);
+        $this->setPostalCode($data['postal_code']);
+        $this->setCreatedAt($data['created_at']);
+        $this->setUpdatedAt($data['updated_at']);
+
+        return $data;
     }
 
     public function update(int $id): bool

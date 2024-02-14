@@ -110,21 +110,16 @@ class State
         }
     }
 
-    public function read($id): bool
+    public function read(int $id): bool
     {
         try {
-            $query = $this->database->prepare("SELECT * FROM states WHERE id = :id");
+            $query = $this->database->prepare('SELECT * FROM states WHERE id = :id');
             $query->execute([':id' => $id]);
 
-            $state = $query->fetch();
+            $data = $query->fetch();
 
-            if ($state) {
-                $this->setId($state['id']);
-                $this->setName($state['name']);
-                $this->setCode($state['code']);
-                $this->setCreatedAt($state['created_at']);
-                $this->setUpdatedAt($state['updated_at']);
-
+            if ($data) {
+                $this->createObject($data);
                 return true;
             } else {
                 return false;
@@ -132,6 +127,36 @@ class State
         } catch (\PDOException $e) {
             return false;
         }
+    }
+
+    public function readAll(): array
+    {
+        try {
+            $query = $this->database->query('SELECT * FROM states');
+
+            $query = $query->fetchAll();
+
+            $response = [];
+            foreach ($query as $data) {
+                $response[] = $this->createObject($data);
+            }
+
+            return $response;
+        } catch (\PDOException $e) {
+            throw new \Exception("Failed to get all public data: " . $e->getMessage());
+        }
+    }
+
+    private function createObject(array $data): array
+    {
+
+        $this->setId($data['id']);
+        $this->setName($data['name']);
+        $this->setCode($data['code']);
+        $this->setCreatedAt($data['created_at']);
+        $this->setUpdatedAt($data['updated_at']);
+
+        return $data;
     }
 
     public function update(int $id): bool

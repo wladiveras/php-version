@@ -10,9 +10,27 @@ use App\Helpers\Validator;
 use App\Helpers\Parse;
 use DateTime;
 
-class UsersController
+class UserController
 {
+    public function index(Request $request)
+    {
+        $request = $request->getQuery();
 
+        $user = new User();
+        $users = $user->readAll();
+
+        if (!$users) {
+            return Response::json(
+                data: Parse::result(errors: ["message" => "cannot find any data."]),
+                code: 404
+            );
+        }
+
+        return Response::json(
+            data: Parse::result(result: $users, action: 200),
+            code: 200
+        );
+    }
     public function show(Request $request)
     {
         $request = $request->getQuery();
@@ -42,7 +60,6 @@ class UsersController
             'email' => ['required', 'email'],
             'password' => ['required', 'min' => 8, 'max' => 16],
             'password_confirm' => ['required', 'password_match'],
-            'birth_date' => ['required', 'birth_date'],
         ]);
 
         if (!empty($errors)) {

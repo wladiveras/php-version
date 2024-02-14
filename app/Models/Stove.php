@@ -278,35 +278,16 @@ class Stove
         }
     }
 
-    public function read($id): bool
+    public function read(int $id): bool
     {
         try {
-            $query = $this->database->prepare("SELECT * FROM stoves WHERE id = :id");
+            $query = $this->database->prepare('SELECT * FROM stoves WHERE id = :id');
             $query->execute([':id' => $id]);
 
-            $stove = $query->fetch();
+            $data = $query->fetch();
 
-            if ($stove) {
-                $this->setId($stove['id']);
-
-                $this->setBurners($stove['burners']);
-                $this->setLighters($stove['lighters']);
-                $this->setLighersColors($stove['lighters_colors']);
-                $this->setOven($stove['oven']);
-                $this->setOvenLamp($stove['oven_lamp']);
-                $this->setOvenLampColor($stove['oven_lamp_color']);
-                $this->setOvenColor($stove['oven_color']);
-                $this->setStoveColor($stove['stove_color']);
-                $this->setStoveWidth($stove['stove_width']);
-                $this->setStoveHeight($stove['stove_height']);
-                $this->setStoveDepth($stove['stove_depth']);
-                $this->setGlassWidth($stove['glass_width']);
-                $this->setGlassHeight($stove['glass_heigth']);
-                $this->setGlassLeight($stove['glass_leight']);
-
-                $this->setCreatedAt($stove['created_at']);
-                $this->setUpdatedAt($stove['updated_at']);
-
+            if ($data) {
+                $this->createObject($data);
                 return true;
             } else {
                 return false;
@@ -316,10 +297,52 @@ class Stove
         }
     }
 
-    public function update(int $id): bool
+    public function readAll(): array
+    {
+        try {
+            $query = $this->database->query('SELECT * FROM stoves');
+
+            $query = $query->fetchAll();
+
+            $response = [];
+            foreach ($query as $data) {
+                $response[] = $this->createObject($data);
+            }
+
+            return $response;
+        } catch (\PDOException $e) {
+            throw new \Exception("Failed to get all public data: " . $e->getMessage());
+        }
+    }
+
+    private function createObject(array $data): array
     {
 
+        $this->setId($data['id']);
 
+        $this->setBurners($data['burners']);
+        $this->setLighters($data['lighters']);
+        $this->setLighersColors($data['lighters_colors']);
+        $this->setOven($data['oven']);
+        $this->setOvenLamp($data['oven_lamp']);
+        $this->setOvenLampColor($data['oven_lamp_color']);
+        $this->setOvenColor($data['oven_color']);
+        $this->setStoveColor($data['stove_color']);
+        $this->setStoveWidth($data['stove_width']);
+        $this->setStoveHeight($data['stove_height']);
+        $this->setStoveDepth($data['stove_depth']);
+        $this->setGlassWidth($data['glass_width']);
+        $this->setGlassHeight($data['glass_heigth']);
+        $this->setGlassLeight($data['glass_leight']);
+
+        $this->setCreatedAt($data['created_at']);
+        $this->setUpdatedAt($data['updated_at']);
+
+        return $data;
+    }
+
+    public function update(int $id): bool
+    {
         try {
             $now = new DateTime();
 

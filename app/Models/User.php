@@ -160,23 +160,16 @@ class User
         }
     }
 
-    public function read(int| null $id): bool
+    public function read(int $id): bool
     {
         try {
             $query = $this->database->prepare('SELECT * FROM users WHERE id = :id');
             $query->execute([':id' => $id]);
 
-            $user = $query->fetch();
+            $data = $query->fetch();
 
-            if ($user) {
-                $this->setId($user['id']);
-                $this->setName($user['name']);
-                $this->setEmail($user['email']);
-                $this->setPassword($user['password']);
-                $this->setEmailVerifiedAt($user['birth_date']);
-                $this->setCreatedAt($user['created_at']);
-                $this->setUpdatedAt($user['updated_at']);
-
+            if ($data) {
+                $this->createObject($data);
                 return true;
             } else {
                 return false;
@@ -184,6 +177,38 @@ class User
         } catch (\PDOException $e) {
             return false;
         }
+    }
+
+    public function readAll(): array
+    {
+        try {
+            $query = $this->database->query('SELECT * FROM users');
+
+            $query = $query->fetchAll();
+
+            $response = [];
+            foreach ($query as $data) {
+                $response[] = $this->createObject($data);
+            }
+
+            return $response;
+        } catch (\PDOException $e) {
+            throw new \Exception("Failed to get all public data: " . $e->getMessage());
+        }
+    }
+
+    private function createObject(array $data): array
+    {
+        $this->setId($data['id']);
+        $this->setName($data['name']);
+        $this->setEmail($data['email']);
+        $this->setPassword($data['password']);
+        $this->setEmailVerifiedAt($data['email_verified_at']);
+
+        $this->setCreatedAt($data['created_at']);
+        $this->setUpdatedAt($data['updated_at']);
+
+        return $data;
     }
 
     public function update(int $id): bool
