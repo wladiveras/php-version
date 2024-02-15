@@ -37,7 +37,7 @@ All steps todo and some tips to run all project workflow, don't forget to use po
 
 #
 
-<div style="text-align: center;">
+<p align="center">
 <img src="https://imgs.search.brave.com/C1slrIwN6UmQAxuz63nThULuiRDW3H_gT5t3FpDfcew/rs:fit:860:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy9j/L2MyL1Bvc3RtYW5f/KHNvZnR3YXJlKS5w/bmc"/>
 
 
