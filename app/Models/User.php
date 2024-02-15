@@ -137,7 +137,12 @@ class User
     public function create()
     {
         try {
+            $now = new DateTime();
+
             $query = $this->database->prepare("INSERT INTO users (name, email, email_verified_at, password, created_at, updated_at) VALUES (:name, :email, :email_verified_at, :password, :created_at, :updated_at)");
+
+            $this->setCreatedAt($now->format('Y-m-d H:i:s'));
+            $this->setUpdatedAt($now->format('Y-m-d H:i:s'));
 
             $query->bindParam(':name', $this->name);
             $query->bindParam(':email', $this->email);
@@ -146,13 +151,11 @@ class User
             $query->bindParam(':created_at', $this->created_at);
             $query->bindParam(':updated_at', $this->updated_at);
 
-            $this->setCreatedAt(new DateTime());
-            $this->setUpdatedAt(new DateTime());
-
             if ($query->execute()) {
                 $this->setId($this->database->lastInsertId());
                 return true;
             } else {
+
                 return false;
             }
         } catch (\PDOException $e) {

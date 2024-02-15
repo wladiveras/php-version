@@ -12,87 +12,92 @@ use App\Controllers\StoveController;
 $router = new Router(new Request);
 
 // UserController Routes
-$router->get('/user/all', function (Request $request) {
+$router->get('/api/user/all', function (Request $request) {
     $controller = new UserController();
     $controller->index($request);
 });
 
-$router->get('/user', function (Request $request) {
+$router->get('/api/user', function (Request $request) {
     $controller = new UserController();
     $controller->show($request);
 });
 
-$router->put('/user', function (Request $request) {
+$router->put('/api/user', function (Request $request) {
     $controller = new UserController();
     $controller->update($request);
 });
 
-$router->post('/user', function (Request $request) {
+$router->post('/api/user', function (Request $request) {
     $controller = new UserController();
-    $controller->create($request);
+    $controller->store($request);
 });
 
-$router->delete('/user', function (Request $request) {
+$router->delete('/api/user', function (Request $request) {
     $controller = new UserController();
-    $controller->delete($request);
+    $controller->destroy($request);
 });
 
 // StoveController Routes
-$router->get('/stove', function (Request $request) {
+$router->get('/api/stove/all', function (Request $request) {
     $controller = new StoveController();
     $controller->index($request);
 });
 
-$router->get('/stove', function (Request $request) {
+$router->get('/api/stove', function (Request $request) {
     $controller = new StoveController();
     $controller->show($request);
 });
 
-$router->put('/stove', function (Request $request) {
+$router->put('/api/stove', function (Request $request) {
     $controller = new StoveController();
     $controller->update($request);
 });
 
-$router->post('/stove', function (Request $request) {
+$router->post('/api/stove', function (Request $request) {
     $controller = new StoveController();
-    $controller->create($request);
+    $controller->store($request);
 });
 
-$router->delete('/stove', function (Request $request) {
+$router->delete('/api/stove', function (Request $request) {
     $controller = new StoveController();
-    $controller->delete($request);
+    $controller->destroy($request);
 });
 
 // AddressController Routes
-$router->get('/address', function (Request $request) {
+$router->get('/api/address/all', function (Request $request) {
     $controller = new AddressController();
     $controller->index($request);
 });
 
-$router->get('/address', function (Request $request) {
+$router->get('/api/address', function (Request $request) {
     $controller = new AddressController();
     $controller->show($request);
+});
+
+$router->put('/api/address', function (Request $request) {
+    $controller = new AddressController();
+    $controller->update($request);
 });
 
 // CityController Routes
-$router->get('/city', function (Request $request) {
+$router->get('/api/city/all', function (Request $request) {
     $controller = new CityController();
     $controller->index($request);
 });
 
-$router->get('/city', function (Request $request) {
+$router->get('/api/city', function (Request $request) {
     $controller = new CityController();
     $controller->show($request);
 });
 
 
 // AddressController Routes
-$router->get('/state', function (Request $request) {
+$router->get('/api/state/all', function (Request $request) {
     $controller = new StateController();
     $controller->index($request);
 });
 
-$router->get('/state', function (Request $request) {
+$router->get('/api/state', function (Request $request) {
     $controller = new StateController();
     $controller->show($request);
 });

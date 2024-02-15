@@ -52,4 +52,7 @@ class AddressController
             code: 200
         );
     }
+    public function update(Request $request)
+    {
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Helpers\Response;
 use App\Helpers\Validator;
 use App\Helpers\Parse;
+
 use DateTime;
 
 class UserController
@@ -51,7 +52,7 @@ class UserController
         );
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $request = $request->getBody();
 
@@ -132,7 +133,7 @@ class UserController
         }
     }
 
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
 
         $errors = Validator::validate($request->getBody(), [

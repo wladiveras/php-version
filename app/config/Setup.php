@@ -5,7 +5,7 @@ namespace App\Config;
 class Setup
 {
     public $database_host = 'localhost';
-    public $database_name = 'fire';
+    public $database_name = 'laravel';
     public $database_username = 'root';
     public $database_password = 'Wladi@121';
 
